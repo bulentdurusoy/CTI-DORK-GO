@@ -131,12 +131,23 @@ johndoe
   - `john-doe`
   - `john_doe`
   - `"john doe"`
-- Run platform-specific queries:
-  - GitHub
+Run platform-specific queries:
+  - Facebook
   - Instagram
-  - Twitter/X
+  - Twitter / X
+  - YouTube
+  - TikTok
+  - Spotify
+  - Apple Music
+  - SoundCloud
+  - Telegram
+  - Snapchat
+  - GitHub
+  - LinkedIn
   - Reddit
-  - etc.
+  - Pastebin
+  - GitLab
+  - NSosyal (Türkiye's Social Media Platform)
 - Run generic queries:
   - `inurl:johndoe`
   - `intitle:johndoe`
