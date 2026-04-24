@@ -171,6 +171,33 @@ example.com + johndoe
 
 ---
 
+## Query Coverage
+
+The application generates and executes multiple types of queries per search:
+
+- ~45 predefined dork templates (file exposure, admin panels, sensitive data, etc.)
+- ~29 platform-specific queries (social media and OSINT platforms)
+- ~6 generic queries (inurl, intitle, quoted searches)
+
+In total, a single search can execute approximately **50–60 queries**, depending on the selected mode.
+
+### Categories
+
+Dork templates are grouped into categories such as:
+
+- File Exposure
+- Login / Admin Panels
+- Directory Listing
+- Error Messages
+- Sensitive Data
+- Database Exposure
+- Configuration Files
+- OSINT / Username
+
+This structure allows results to be organized and analyzed more efficiently.
+
+---
+
 ## Concurrency Model
 
 - Fixed number of worker goroutines
