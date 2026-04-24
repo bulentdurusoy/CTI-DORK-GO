@@ -214,10 +214,10 @@ This approach reduces total execution time significantly compared to sequential 
 
 ## Tech Stack
 
-- **Go** — core backend logic
-- **Wails** — desktop application framework
-- **JavaScript / HTML / CSS** — frontend
-- **Serper.dev API** — Google search provider
+- **Go** : core backend logic
+- **Wails** : desktop application framework
+- **JavaScript / HTML / CSS** : frontend
+- **Serper.dev API** : Google search provider
 
 ---
 
@@ -298,7 +298,7 @@ You can configure the API key in two ways:
 - Suitable for further processing
 
 ### TXT Export
-- Human-readable format
+- Human readable format
 - Suitable for reporting
 
 ---
