@@ -131,7 +131,7 @@ johndoe
   - `john-doe`
   - `john_doe`
   - `"john doe"`
-Run platform-specific queries:
+- Run platform-specific queries:
   - Facebook
   - Instagram
   - Twitter / X
