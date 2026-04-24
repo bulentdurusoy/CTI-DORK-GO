@@ -175,9 +175,9 @@ example.com + johndoe
 
 The application generates and executes multiple types of queries per search:
 
-- ~45 predefined dork templates (file exposure, admin panels, sensitive data, etc.)
-- ~29 platform-specific queries (social media and OSINT platforms)
-- ~6 generic queries (inurl, intitle, quoted searches)
+- 45 predefined dork templates (file exposure, admin panels, sensitive data)
+- 29 platform-specific queries (social media and OSINT platforms)
+- 6 generic queries (inurl, intitle, quoted searches)
 
 In total, a single search can execute approximately **50–60 queries**, depending on the selected mode.
 
