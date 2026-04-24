@@ -4,30 +4,23 @@ import (
 	"strings"
 )
 
-// MockSearchEngine provides simulated search results for in-app demonstration.
-// It generates realistic-looking results based on the dork query pattern.
 type MockSearchEngine struct{}
 
-// NewMockSearchEngine creates a new MockSearchEngine instance
 func NewMockSearchEngine() *MockSearchEngine {
 	return &MockSearchEngine{}
 }
 
-// Search generates mock search results based on the query content
 func (m *MockSearchEngine) Search(query string) ([]SearchResult, error) {
 	domain := extractDomain(query)
 	keyword := extractKeyword(query)
 
-	// Determine mock result type from query content
 	results := m.generateResults(query, domain, keyword)
 
-	// Validate results strictly
 	validResults := ValidateResults(results)
 
 	return validResults, nil
 }
 
-// ValidateResults ensures all results meet strict criteria and removes duplicates
 func ValidateResults(results []SearchResult) []SearchResult {
 	var valid []SearchResult
 	seen := make(map[string]bool)
@@ -36,23 +29,19 @@ func ValidateResults(results []SearchResult) []SearchResult {
 		urlStr := strings.TrimSpace(r.URL)
 		title := strings.TrimSpace(r.Title)
 
-		// Title must not be empty
 		if title == "" {
 			continue
 		}
-
-		// URL must be non-empty and absolute
+	
 		if urlStr == "" || (!strings.HasPrefix(urlStr, "http://") && !strings.HasPrefix(urlStr, "https://")) {
 			continue
 		}
 
-		// Remove duplicate URLs
 		if seen[urlStr] {
 			continue
 		}
 		seen[urlStr] = true
 
-		// Assign cleaned values
 		r.URL = urlStr
 		r.Title = title
 		valid = append(valid, r)
@@ -64,9 +53,7 @@ func ValidateResults(results []SearchResult) []SearchResult {
 	return valid
 }
 
-// extractKeyword pulls the keyword from a quoted query segment
 func extractKeyword(query string) string {
-	// Try to extract from quotes like "keyword"
 	start := strings.Index(query, `"`)
 	if start != -1 {
 		end := strings.Index(query[start+1:], `"`)
@@ -77,7 +64,6 @@ func extractKeyword(query string) string {
 	return ""
 }
 
-// extractDomain pulls the domain from a "site:X" query segment
 func extractDomain(query string) string {
 	parts := strings.Fields(query)
 	for _, p := range parts {
@@ -88,7 +74,6 @@ func extractDomain(query string) string {
 	return ""
 }
 
-// generateResults creates category-aware mock results
 func (m *MockSearchEngine) generateResults(query, domain, keyword string) []SearchResult {
 	q := strings.ToLower(query)
 
@@ -354,19 +339,16 @@ func (m *MockSearchEngine) generateResults(query, domain, keyword string) []Sear
 		})
 
 	default:
-		// Do NOT fabricate fake data if no realistic mock matches exist
 		return []SearchResult{}
 	}
 }
 
-// mockEntry holds template data for a mock result
 type mockEntry struct {
 	title   string
 	path    string
 	snippet string
 }
 
-// fileResults creates results that look like file discoveries
 func (m *MockSearchEngine) fileResults(domain, ext string, entries []mockEntry) []SearchResult {
 	var results []SearchResult
 	for _, e := range entries {
@@ -379,7 +361,6 @@ func (m *MockSearchEngine) fileResults(domain, ext string, entries []mockEntry) 
 	return results
 }
 
-// pageResults creates results that look like page discoveries
 func (m *MockSearchEngine) pageResults(domain string, entries []mockEntry) []SearchResult {
 	var results []SearchResult
 	for _, e := range entries {

@@ -2,7 +2,7 @@ package dorks
 
 import "strings"
 
-// Category represents a dork query category
+// dork query category
 type Category string
 
 const (
@@ -17,7 +17,7 @@ const (
 	CategoryOSINT        Category = "OSINT / Username"
 )
 
-// Dork represents a single Google dork query template
+//  single Google dork 
 type Dork struct {
 	ID           string   `json:"id"`
 	Name         string   `json:"name"`
@@ -29,7 +29,7 @@ type Dork struct {
 	NeedsKeyword bool     `json:"needsKeyword"` // true if this dork requires a keyword
 }
 
-// DorkType returns "domain", "keyword", or "hybrid" based on requirement flags
+//  "domain", "keyword", or "hybrid" 
 func (d Dork) DorkType() string {
 	if d.NeedsDomain && d.NeedsKeyword {
 		return "hybrid"
@@ -40,8 +40,6 @@ func (d Dork) DorkType() string {
 	return "domain"
 }
 
-// IsCompatible checks if a dork can run given the current domain/keyword input.
-// A dork is skipped if it requires a placeholder that was not provided.
 func (d Dork) IsCompatible(domain, keyword string) bool {
 	if d.NeedsDomain && domain == "" {
 		return false
@@ -49,7 +47,7 @@ func (d Dork) IsCompatible(domain, keyword string) bool {
 	if d.NeedsKeyword && keyword == "" {
 		return false
 	}
-	// Also auto-detect: if the template contains {domain} but no domain → skip
+
 	if strings.Contains(d.Template, "{domain}") && domain == "" {
 		return false
 	}
@@ -59,7 +57,7 @@ func (d Dork) IsCompatible(domain, keyword string) bool {
 	return true
 }
 
-// GetCategories returns all available dork categories as strings
+// GetCategories 
 func GetCategories() []string {
 	return []string{
 		string(CategoryFileExposure),
@@ -74,12 +72,12 @@ func GetCategories() []string {
 	}
 }
 
-// GetAllDorks returns the complete library of categorized dork templates
+// GetAllDorks returns 
 func GetAllDorks() []Dork {
 	return []Dork{
-		// ═══════════════════════════════════════════════════
-		// FILE EXPOSURE (10 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+		
+		// FILE EXPOSURE 
+		
 		{
 			ID: "file-01", Name: "PDF Documents",
 			Template: "site:{domain} filetype:pdf", Category: CategoryFileExposure,
@@ -141,9 +139,7 @@ func GetAllDorks() []Dork {
 			Severity: "high", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// LOGIN / ADMIN PANELS (6 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+		// LOGIN / ADMIN PANELS 
 		{
 			ID: "login-01", Name: "Admin URL Paths",
 			Template: "site:{domain} inurl:admin", Category: CategoryLoginPanels,
@@ -181,9 +177,8 @@ func GetAllDorks() []Dork {
 			Severity: "high", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// DIRECTORY LISTING (5 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+		// DIRECTORY LISTING 
+
 		{
 			ID: "dir-01", Name: "Open Directory Index",
 			Template: `site:{domain} intitle:"index of /"`, Category: CategoryDirectories,
@@ -215,9 +210,8 @@ func GetAllDorks() []Dork {
 			Severity: "high", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// ERROR MESSAGES (5 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+		// ERROR MESSAGES
+
 		{
 			ID: "err-01", Name: "MySQL Syntax Errors",
 			Template: `site:{domain} "sql syntax" "mysql"`, Category: CategoryErrors,
@@ -249,9 +243,9 @@ func GetAllDorks() []Dork {
 			Severity: "medium", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// SENSITIVE DATA (7 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+	
+		// SENSITIVE DATA
+
 		{
 			ID: "sens-01", Name: "Credentials in Logs",
 			Template: `site:{domain} intext:"username" "password" filetype:log`, Category: CategorySensitive,
@@ -295,9 +289,9 @@ func GetAllDorks() []Dork {
 			Severity: "critical", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// SEO / INDEXING (5 dorks) — domain-based + hybrid
-		// ═══════════════════════════════════════════════════
+
+		// SEO / INDEXING
+
 		{
 			ID: "seo-01", Name: "Full Site Index",
 			Template: "site:{domain}", Category: CategorySEO,
@@ -329,9 +323,9 @@ func GetAllDorks() []Dork {
 			Severity: "low", NeedsDomain: true, NeedsKeyword: true,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// DATABASE EXPOSURE (5 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+
+		// DATABASE EXPOSURE 
+
 		{
 			ID: "db-01", Name: "SQL INSERT Dumps",
 			Template: `site:{domain} filetype:sql "INSERT INTO"`, Category: CategoryDatabase,
@@ -363,9 +357,9 @@ func GetAllDorks() []Dork {
 			Severity: "high", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// CONFIGURATION FILES (7 dorks) — all domain-based
-		// ═══════════════════════════════════════════════════
+	
+		// CONFIGURATION FILES 
+	
 		{
 			ID: "cfg-01", Name: "YAML Config Files",
 			Template: "site:{domain} filetype:yml OR filetype:yaml", Category: CategoryConfig,
@@ -409,9 +403,9 @@ func GetAllDorks() []Dork {
 			Severity: "critical", NeedsDomain: true, NeedsKeyword: false,
 		},
 
-		// ═══════════════════════════════════════════════════
-		// OSINT / USERNAME (10 dorks) — keyword-only
-		// ═══════════════════════════════════════════════════
+
+		// OSINT / USERNAME 
+
 		{
 			ID: "osint-01", Name: "Username Search",
 			Template: `"{keyword}" site:twitter.com OR site:x.com`, Category: CategoryOSINT,
@@ -475,7 +469,7 @@ func GetAllDorks() []Dork {
 	}
 }
 
-// GetDorksByCategory returns dorks filtered by the given category name
+
 func GetDorksByCategory(category string) []Dork {
 	var result []Dork
 	for _, d := range GetAllDorks() {
@@ -486,7 +480,6 @@ func GetDorksByCategory(category string) []Dork {
 	return result
 }
 
-// GetCompatibleDorks returns only the dorks that can run with the given inputs
 func GetCompatibleDorks(domain, keyword string) []Dork {
 	var result []Dork
 	for _, d := range GetAllDorks() {
@@ -497,11 +490,6 @@ func GetCompatibleDorks(domain, keyword string) []Dork {
 	return result
 }
 
-// GetDorksByMode returns dorks appropriate for the given search mode.
-// Mode values match search.SearchMode constants (string-based to avoid circular imports):
-//   - "WEBSITE_ONLY"  → domain-based dorks only (NeedsDomain=true, NeedsKeyword=false)
-//   - "USERNAME_ONLY" → keyword/username dorks only (NeedsKeyword=true, NeedsDomain=false)
-//   - "INTERSECTION"  → all compatible dorks that can work with both domain and keyword
 func GetDorksByMode(mode string, domain, keyword string) []Dork {
 	all := GetAllDorks()
 	var result []Dork
@@ -509,7 +497,6 @@ func GetDorksByMode(mode string, domain, keyword string) []Dork {
 	for _, d := range all {
 		switch mode {
 		case "WEBSITE_ONLY":
-			// Only domain-based dorks; skip anything that requires a keyword
 			if d.NeedsKeyword {
 				continue
 			}
@@ -517,7 +504,6 @@ func GetDorksByMode(mode string, domain, keyword string) []Dork {
 				continue
 			}
 		case "USERNAME_ONLY":
-			// Only username/keyword-based dorks; skip anything that requires a domain
 			if d.NeedsDomain {
 				continue
 			}
@@ -525,7 +511,7 @@ func GetDorksByMode(mode string, domain, keyword string) []Dork {
 				continue
 			}
 		case "INTERSECTION":
-			// All dorks that can work with both inputs
+			
 			if !d.IsCompatible(domain, keyword) {
 				continue
 			}

@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// ExportJSON writes data to a JSON file with pretty formatting
 func ExportJSON(data interface{}, filePath string) error {
 	jsonBytes, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
@@ -17,13 +16,10 @@ func ExportJSON(data interface{}, filePath string) error {
 	return os.WriteFile(filePath, jsonBytes, 0644)
 }
 
-// ExportTXT writes a formatted text report to a file
 func ExportTXT(content string, filePath string) error {
 	return os.WriteFile(filePath, []byte(content), 0644)
 }
 
-// FormatResultsAsTXT converts search results into a human-readable text report.
-// The data parameter should be a slice of category result groups.
 func FormatResultsAsTXT(domain, keyword string, data interface{}) string {
 	var sb strings.Builder
 
@@ -37,7 +33,6 @@ func FormatResultsAsTXT(domain, keyword string, data interface{}) string {
 	sb.WriteString(fmt.Sprintf("  Date:     %s\n", time.Now().Format("2006-01-02 15:04:05")))
 	sb.WriteString("\n")
 
-	// Try to marshal and unmarshal to get structured data
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
 		sb.WriteString("Error: Could not format results\n")
@@ -88,7 +83,6 @@ func FormatResultsAsTXT(domain, keyword string, data interface{}) string {
 					sb.WriteString(fmt.Sprintf("    [%d] %s\n", i+1, result.Title))
 					sb.WriteString(fmt.Sprintf("        %s\n", result.URL))
 					if result.Snippet != "" {
-						// Truncate long snippets
 						snippet := result.Snippet
 						if len(snippet) > 120 {
 							snippet = snippet[:117] + "..."

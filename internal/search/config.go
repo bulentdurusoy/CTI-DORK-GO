@@ -8,8 +8,8 @@ import (
 	"sync"
 )
 
-// SearchConfig holds application-level search configuration.
-// Persisted to ~/.cti-dork/config.json
+
+//  ~/.cti-dork/config.json
 type SearchConfig struct {
 	SerperAPIKey string `json:"serperApiKey"`
 }
@@ -20,7 +20,7 @@ var (
 	configFilePath string
 )
 
-// getConfigPath returns the path to the config JSON file
+// returns the path to the config JSON file
 func getConfigPath() string {
 	if configFilePath != "" {
 		return configFilePath
@@ -33,8 +33,8 @@ func getConfigPath() string {
 	return configFilePath
 }
 
-// LoadConfig reads the search configuration from disk.
-// Returns a default (empty) config if the file doesn't exist.
+// search configuration from disk
+
 func LoadConfig() *SearchConfig {
 	path := getConfigPath()
 
@@ -53,7 +53,7 @@ func LoadConfig() *SearchConfig {
 	return &cfg
 }
 
-// SaveConfig persists the search configuration to disk
+// search configuration to disk
 func SaveConfig(cfg *SearchConfig) error {
 	path := getConfigPath()
 
@@ -71,8 +71,8 @@ func SaveConfig(cfg *SearchConfig) error {
 	return os.WriteFile(path, data, 0644)
 }
 
-// GetCachedConfig returns the last loaded config without re-reading disk.
-// Falls back to LoadConfig if no cached version exists.
+//  the last loaded config without rereading disk
+
 func GetCachedConfig() *SearchConfig {
 	if cachedConfig != nil {
 		return cachedConfig
@@ -80,14 +80,13 @@ func GetCachedConfig() *SearchConfig {
 	return LoadConfig()
 }
 
-// HasAPIKey returns true if a Serper API key is configured
+// true if a Serper API key is configured
 func HasAPIKey() bool {
 	cfg := GetCachedConfig()
 	return cfg.SerperAPIKey != ""
 }
 
-// MaskAPIKey returns a masked version of the API key for display.
-// Shows first 4 and last 4 characters: "691a...bc0c"
+// masked version of the API key for display.
 func MaskAPIKey(key string) string {
 	key = strings.TrimSpace(key)
 	if len(key) <= 8 {

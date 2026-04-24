@@ -7,26 +7,22 @@ import (
 	"unicode"
 )
 
-// ─── Expanded Query Types ────────────────────────────────────────
 
-// ExpandedQuery represents a single auto-generated OSINT query
 type ExpandedQuery struct {
-	Query    string `json:"query"`    // the actual Google query string
-	Platform string `json:"platform"` // "Instagram", "GitHub", "Generic", "Fallback"
-	Priority int    `json:"priority"` // 1=platform, 2=inurl/intitle, 3=generic, 4=fallback
-	Label    string `json:"label"`    // human-readable label for UI
+	Query    string `json:"query"`    
+	Platform string `json:"platform"` 
+	Priority int    `json:"priority"` 
+	Label    string `json:"label"`    
 }
 
-// ─── Platform Registry ──────────────────────────────────────────
 
-// Platform defines a search target with its query templates
 type Platform struct {
-	Name      string   // "Instagram", "GitHub", etc.
-	Domains   []string // ["instagram.com"]
-	Templates []string // query templates with {u} placeholder
+	Name      string   
+	Domains   []string 
+	Templates []string 
 }
 
-// GetPlatforms returns the full platform registry for OSINT username searches
+
 func GetPlatforms() []Platform {
 	return []Platform{
 		{
@@ -160,16 +156,8 @@ func GetPlatforms() []Platform {
 	}
 }
 
-// ─── Username Expansion ─────────────────────────────────────────
+// Username Expansion 
 
-// ExpandUsername generates multiple search variations from a single username.
-// For example, "bulentdurusoy" generates:
-//   - bulentdurusoy
-//   - "bulentdurusoy"
-//   - bulent-durusoy (if split point found)
-//   - bulent_durusoy (if split point found)
-//   - bulent durusoy (if split point found)
-//   - "bulent durusoy" (if split point found)
 func ExpandUsername(username string) []string {
 	username = strings.TrimSpace(username)
 	if username == "" {
@@ -191,10 +179,10 @@ func ExpandUsername(username string) []string {
 		}
 	}
 
-	// 1. Raw username
+	//  Raw username
 	add(username)
 
-	// 2. If the username already contains separators, extract the "clean" form and parts
+	//  If the username already contains separators
 	parts := splitUsername(username)
 	if len(parts) > 1 {
 		joined := strings.Join(parts, "")
@@ -204,7 +192,7 @@ func ExpandUsername(username string) []string {
 		add(strings.Join(parts, " "))
 		add(fmt.Sprintf(`"%s"`, strings.Join(parts, " ")))
 	} else {
-		// 3. Try to guess split points for concatenated usernames like "bulentdurusoy"
+		//  Try to guess split points 
 		guessedParts := guessSplitPoints(username)
 		if len(guessedParts) > 1 {
 			add(strings.Join(guessedParts, "-"))
@@ -217,9 +205,8 @@ func ExpandUsername(username string) []string {
 	return variations
 }
 
-// splitUsername splits a username by common separators (-, _, .)
+
 func splitUsername(username string) []string {
-	// Replace common separators with a standard one
 	normalized := strings.NewReplacer("-", " ", "_", " ", ".", " ").Replace(username)
 	parts := strings.Fields(normalized)
 	if len(parts) <= 1 {
@@ -228,18 +215,13 @@ func splitUsername(username string) []string {
 	return parts
 }
 
-// guessSplitPoints tries to find a valid split point in a concatenated username.
-// Heuristic: tries splitting at every position and checks if both parts are >= 3 chars.
-// Prefers splits where both halves look like name parts (start with consonant+vowel patterns).
 func guessSplitPoints(username string) []string {
 	lower := strings.ToLower(username)
-
-	// Don't try to split very short usernames or ones with numbers
+	
 	if len(lower) < 6 {
 		return []string{username}
 	}
 
-	// If it has numbers mixed with letters, don't try to split as a name
 	hasLetters := false
 	hasDigits := false
 	for _, r := range lower {
@@ -251,14 +233,12 @@ func guessSplitPoints(username string) []string {
 		}
 	}
 	if hasDigits && hasLetters {
-		// Could be student ID + name or vice versa; don't guess
 		return []string{username}
 	}
 	if !hasLetters {
 		return []string{username}
 	}
 
-	// Try splitting at each position
 	bestSplit := []string{username}
 	bestScore := 0
 
@@ -279,17 +259,13 @@ func guessSplitPoints(username string) []string {
 	return []string{username}
 }
 
-// scoreSplit scores how likely a split is a valid name split.
-// Higher = more likely to be a real name boundary.
 func scoreSplit(left, right string) int {
 	score := 0
 
-	// Both parts should be at least 3 chars
 	if len(left) < 3 || len(right) < 3 {
 		return 0
 	}
 
-	// Bonus for common name lengths (3-10 chars)
 	if len(left) >= 3 && len(left) <= 10 {
 		score++
 	}
@@ -297,7 +273,6 @@ func scoreSplit(left, right string) int {
 		score++
 	}
 
-	// Bonus if both start with a consonant (common in names)
 	vowels := "aeiouyöüı"
 	if !strings.ContainsRune(vowels, rune(left[0])) {
 		score++
@@ -306,7 +281,6 @@ func scoreSplit(left, right string) int {
 		score++
 	}
 
-	// Bonus for vowel-consonant transitions at split point
 	lastOfLeft := rune(left[len(left)-1])
 	firstOfRight := rune(right[0])
 	leftIsVowel := strings.ContainsRune(vowels, lastOfLeft)
@@ -318,10 +292,8 @@ func scoreSplit(left, right string) int {
 	return score
 }
 
-// ─── Query Generation ───────────────────────────────────────────
+// Query Generation 
 
-// GeneratePlatformQueries generates platform-specific OSINT queries for a username.
-// These are Priority 1 queries — most precise, highest value.
 func GeneratePlatformQueries(username string) []ExpandedQuery {
 	platforms := GetPlatforms()
 	username = strings.TrimSpace(username)
@@ -346,8 +318,7 @@ func GeneratePlatformQueries(username string) []ExpandedQuery {
 	return queries
 }
 
-// GenerateGenericQueries generates broad inurl/intitle/quoted queries.
-// These are Priority 2 queries — wider net, still targeted.
+
 func GenerateGenericQueries(username string) []ExpandedQuery {
 	username = strings.TrimSpace(username)
 	if username == "" {
@@ -377,12 +348,11 @@ func GenerateGenericQueries(username string) []ExpandedQuery {
 		Label:    fmt.Sprintf(`Quoted: "%s"`, username),
 	})
 
-	// For expanded variations (space-separated name etc.)
+	// For expanded variations 
 	for _, v := range variations {
 		if v == username {
 			continue
 		}
-		// Only add quoted version for space-containing variations
 		if strings.Contains(v, " ") && !strings.HasPrefix(v, `"`) {
 			queries = append(queries, ExpandedQuery{
 				Query:    fmt.Sprintf(`"%s"`, v),
@@ -397,7 +367,6 @@ func GenerateGenericQueries(username string) []ExpandedQuery {
 }
 
 // GenerateFallbackQueries generates broad OR-based queries for when results are low.
-// These are Priority 4 queries — widest net.
 func GenerateFallbackQueries(username string) []ExpandedQuery {
 	username = strings.TrimSpace(username)
 	if username == "" {
@@ -406,7 +375,6 @@ func GenerateFallbackQueries(username string) []ExpandedQuery {
 
 	var queries []ExpandedQuery
 
-	// Try username with common profile-related terms
 	queries = append(queries, ExpandedQuery{
 		Query:    fmt.Sprintf(`"%s" profile OR account OR user`, username),
 		Platform: "Fallback",
@@ -414,7 +382,6 @@ func GenerateFallbackQueries(username string) []ExpandedQuery {
 		Label:    fmt.Sprintf("Broad: %s + profile keywords", username),
 	})
 
-	// If we can guess a name split, add an OR query
 	parts := splitUsername(username)
 	if len(parts) <= 1 {
 		parts = guessSplitPoints(username)
@@ -429,7 +396,6 @@ func GenerateFallbackQueries(username string) []ExpandedQuery {
 		})
 	}
 
-	// Document search
 	queries = append(queries, ExpandedQuery{
 		Query:    fmt.Sprintf(`"%s" filetype:pdf OR filetype:doc OR filetype:xlsx`, username),
 		Platform: "Fallback",
@@ -440,12 +406,8 @@ func GenerateFallbackQueries(username string) []ExpandedQuery {
 	return queries
 }
 
-// ─── Normalized Comparison ──────────────────────────────────────
+//Normalized Comparison 
 
-// NormalizeForComparison strips separators (-, _, ., spaces) and lowercases
-// for fuzzy username matching.
-// "bulent-durusoy" → "bulentdurusoy"
-// "Bulent_Durusoy" → "bulentdurusoy"
 var separatorRegex = regexp.MustCompile(`[-_.\s]+`)
 
 func NormalizeForComparison(s string) string {
@@ -453,10 +415,8 @@ func NormalizeForComparison(s string) string {
 	return separatorRegex.ReplaceAllString(s, "")
 }
 
-// ─── Intersection Queries ───────────────────────────────────────
+//Intersection Queries 
 
-// GenerateIntersectionQueries generates queries combining domain + username.
-// Used when both inputs are provided (A ∩ B mode).
 func GenerateIntersectionQueries(domain, username string) []ExpandedQuery {
 	domain = strings.TrimSpace(domain)
 	username = strings.TrimSpace(username)

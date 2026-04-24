@@ -7,14 +7,12 @@ import (
 	"sync"
 )
 
-// FavoriteStore manages user's favorite dork IDs with JSON file persistence
 type FavoriteStore struct {
 	mu        sync.RWMutex
 	favorites map[string]bool
 	filePath  string
 }
 
-// NewFavoriteStore creates a new FavoriteStore and loads existing favorites from disk
 func NewFavoriteStore() *FavoriteStore {
 	store := &FavoriteStore{
 		favorites: make(map[string]bool),
@@ -24,7 +22,6 @@ func NewFavoriteStore() *FavoriteStore {
 	return store
 }
 
-// AddFavorite marks a dork ID as a favorite
 func (fs *FavoriteStore) AddFavorite(id string) {
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
@@ -32,7 +29,6 @@ func (fs *FavoriteStore) AddFavorite(id string) {
 	fs.save()
 }
 
-// RemoveFavorite removes a dork ID from favorites
 func (fs *FavoriteStore) RemoveFavorite(id string) {
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
@@ -40,14 +36,12 @@ func (fs *FavoriteStore) RemoveFavorite(id string) {
 	fs.save()
 }
 
-// IsFavorite checks if a dork ID is marked as a favorite
 func (fs *FavoriteStore) IsFavorite(id string) bool {
 	fs.mu.RLock()
 	defer fs.mu.RUnlock()
 	return fs.favorites[id]
 }
 
-// GetFavorites returns all favorite dork IDs
 func (fs *FavoriteStore) GetFavorites() []string {
 	fs.mu.RLock()
 	defer fs.mu.RUnlock()
@@ -58,7 +52,6 @@ func (fs *FavoriteStore) GetFavorites() []string {
 	return result
 }
 
-// save persists favorites to the JSON file
 func (fs *FavoriteStore) save() {
 	dir := filepath.Dir(fs.filePath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -78,7 +71,6 @@ func (fs *FavoriteStore) save() {
 	_ = os.WriteFile(fs.filePath, data, 0644)
 }
 
-// load reads favorites from the JSON file on disk
 func (fs *FavoriteStore) load() {
 	data, err := os.ReadFile(fs.filePath)
 	if err != nil {
@@ -95,7 +87,6 @@ func (fs *FavoriteStore) load() {
 	}
 }
 
-// getFavoritesPath returns the path to the favorites JSON file in user's home directory
 func getFavoritesPath() string {
 	home, err := os.UserHomeDir()
 	if err != nil {

@@ -7,8 +7,8 @@ import (
 	"runtime"
 )
 
-// OpenInBrowser opens a Google search query in the user's default web browser.
-// This is the safe execution mode that avoids scraping Google directly.
+// OpenInBrowser opens user's browser
+
 func OpenInBrowser(query string) error {
 	searchURL := "https://www.google.com/search?q=" + url.QueryEscape(query)
 
